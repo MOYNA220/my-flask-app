@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Sales Report</h2>
+    <hr>
+    
+<div class="card mb-3">
+  <div class="card-body py-2">
+    <form method="GET" action="{{ url_for('sales_report') }}" 
+          class="d-flex align-items-center flex-wrap" style="gap: 12px;">
+
+      <!-- From Date -->
+      <div class="form-group d-flex align-items-center mb-2" style="gap: 6px;">
+        <label for="start_date" class="mb-0">From:</label>
+        <input type="date" class="form-control form-control-sm" 
+               id="start_date" name="start_date"
+               style="width: 150px;"
+               value="{{ start_date.strftime('%Y-%m-%d') if start_date else '' }}">
+      </div>
+
+      <!-- To Date -->
+      <div class="form-group d-flex align-items-center mb-2" style="gap: 6px;">
+        <label for="end_date" class="mb-0">To:</label>
+        <input type="date" class="form-control form-control-sm" 
+               id="end_date" name="end_date"
+               style="width: 150px;"
+               value="{{ end_date.strftime('%Y-%m-%d') if end_date else '' }}">
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-flex align-items-center mb-2" style="gap: 8px;">
+        <button type="submit" class="btn btn-sm btn-primary">
+          <i class="fas fa-filter"></i> Filter
+        </button>
+        <a href="{{ url_for('sales_report') }}" class="btn btn-sm btn-secondary">
+          <i class="fas fa-sync"></i> Reset
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Summary</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Total Sales</h6>
+                            <h4 class="text-primary">₹{{ "%.2f"|format(total_sales) }}</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Total Profit</h6>
+                            <h4 class="text-success">₹{{ "%.2f"|format(total_profit) }}</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Amount Received</h6>
+                            <h4 class="text-info">₹{{ "%.2f"|format(total_received) }}</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Amount Due</h6>
+                            <h4 class="text-danger">₹{{ "%.2f"|format(total_due) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Bill No</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Received</th>
+                            <th>Due</th>
+                            <th>Payment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.sale_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ sale.bill_number }}</td>
+                            <td>
+                                {% if sale.customer %}
+                                    {{ sale.customer.name }}
+                                {% else %}
+                                    Walk-in
+                                {% endif %}
+                            </td>
+                            <td>₹{{ "%.2f"|format(sale.total_amount) }}</td>
+                            <td>₹{{ "%.2f"|format(sale.received_amount) }}</td>
+                            <td>
+                                {% if sale.due_amount > 0 %}
+                                    <span class="badge badge-danger", style="color: red;">₹{{ "%.2f"|format(sale.due_amount) }}</span>
+                                {% else %}
+                                    <span class="badge badge-success", style="color: green;">Paid</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ sale.payment_method or 'Cash' }}</td>
+                            <td>
+                                <a href="{{ url_for('view_sale', id=sale.id) }}" class="btn btn-sm btn-info">
+                                    View</i>
+                                </a>
+                                
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">No sales found for selected period</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

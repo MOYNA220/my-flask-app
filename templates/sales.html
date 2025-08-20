@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Sales{% endblock %}
+{% block header %}Sales Management{% endblock %}
+
+{% block header_buttons %}
+<a href="{{ url_for('new_sale') }}" class="btn btn-primary">
+    <i class="bi bi-plus-circle"></i> New Sale
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <form method="get" class="mb-4">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search by bill number..." name="search" value="{{ search_term }}">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                {% if search_term %}
+                <a href="{{ url_for('sales') }}" class="btn btn-outline-danger">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Bill No</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Received</th>
+                        <th>Due</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td>{{ sale.sale_date.strftime("%d-%m-%Y") }}</td>
+                        <td>{{ sale.bill_number }}</td>
+                        <td>
+                            {% if sale.customer_id %}
+                            <a href="{{ url_for('view_customer', id=sale.customer_id) }}">
+                                {{ sale.customer.name }}
+                            </a>
+                            {% else %}
+                            Walk-in-Customer
+                            {% endif %}
+                        </td>
+                        <td>₹{{ "%.2f"|format(sale.total_amount) }}</td>
+                        <td>₹{{ "%.2f"|format(sale.received_amount) }}</td>
+                        <td class="{% if sale.due_amount > 0 %}text-danger{% else %}text-success{% endif %}">
+                            ₹{{ "%.2f"|format(sale.due_amount) }}
+                        </td>
+                        <td>{{ sale.payment_method|capitalize }}</td>
+                        <td>
+                            <a href="{{ url_for('view_sale', id=sale.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+			    <a href="{{ url_for('edit_sale', id=sale.id) }}" class="btn btn-sm btn-outline-warning">
+        		        <i class="bi bi-pencil"></i>
+    			   </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">No sales found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

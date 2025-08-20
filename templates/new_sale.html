@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>New Sale</h2>
+        <button id="cancel-sale" class="btn btn-outline-danger">
+            <i class="fas fa-times"></i> Cancel Sale
+        </button>
+    </div>
+    
+    <!-- Customer Selection -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Customer Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="customer-select" class="form-label">Select Customer</label>
+                    <select class="form-select" id="customer-select">
+                        <option value="">Walk-in Customer</option>
+                        {% for customer in customers %}
+                        <option value="{{ customer.id }}">{{ customer.name }} ({{ customer.mobile }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-outline-primary mt-4" id="new-customer-btn" data-bs-toggle="modal" data-bs-target="#newCustomerModal">
+                        New Customer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Search and Selection -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Add Items</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <input type="text" id="item-search" class="form-control" placeholder="Search items...">
+            </div>
+            
+            <div class="table-responsive" style="max-height: 130px; overflow-y: auto;">
+                <table id="items-table" class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Stock</th>
+                            <th>Unit</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.unit }}</td>
+                            <td>{{ "%.2f"|format(item.sale_price) }}</td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="number" class="form-control item-quantity" 
+                                           value="1" min="1" max="{{ item.quantity }}" 
+                                           style="width: 3px;">
+                                    <button class="btn btn-primary btn-sm add-to-cart" 
+                                            data-item-id="{{ item.id }}" 
+                                            data-item-name="{{ item.name }}" 
+                                            data-item-unit="{{ item.unit }}"
+                                            data-item-price="{{ item.sale_price }}"
+                                            data-item-purchase-price="{{ item.purchase_price }}">
+                                        Add
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Shopping Cart</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="cart-items" class="table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Unit</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Cart items will be added here by JavaScript -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                            <td id="subtotal">0.00</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Payment</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Payment Method:</strong></label>
+                        <select class="form-select" id="payment-method">
+                            <option value="Cash">Cash</option>
+                            <option value="Online">Online</option>
+                            <option value="Split">Split Payment</option>
+                        </select>
+                    </div>
+                    
+                    <div id="cash-section">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Amount Received:</strong></label>
+                            <input type="number" class="form-control" id="received-amount" min="0" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div id="split-section" style="display: none;">
+                        <div class="mb-3">
+                            <label class="form-label">Cash Amount</label>
+                            <input type="number" class="form-control" id="cash-amount" min="0" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Online Amount</label>
+                            <input type="number" class="form-control" id="online-amount" min="0" step="0.01">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Due Amount</label>
+                        <input type="text" class="form-control" id="due-amount" readonly value="0.00">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Change/Refund</label>
+                        <input type="text" class="form-control" id="refund-amount" readonly value="0.00">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button class="btn btn-success btn-lg" id="complete-sale">Complete Sale</button>
+            </div>
+        </div>
+    </div>
+</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="{{ url_for('static', filename='js/sales.js') }}"></script>
+<!-- New Customer Modal -->
+<div class="modal fade" id="newCustomerModal" tabindex="-1" aria-labelledby="newCustomerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newCustomerModalLabel">Add New Customer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="new-customer-form">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" id="customer-name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Mobile</label>
+            <input type="text" class="form-control" id="customer-mobile">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            <input type="text" class="form-control" id="customer-address">
+          </div>
+          <button type="submit" class="btn btn-primary">Save Customer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/sales.js') }}"></script>
+{% endblock %}

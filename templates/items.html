@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory{% endblock %}
+{% block header %}Inventory Management{% endblock %}
+
+{% block header_buttons %}
+<a href="{{ url_for('add_item') }}" class="btn btn-primary">
+    <i class="bi bi-plus-circle"></i> Add Item
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <form method="get" class="mb-4">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search items..." name="search" value="{{ search_term }}">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                {% if search_term %}
+                <a href="{{ url_for('items') }}" class="btn btn-outline-danger">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Item Name</th>
+                        <th>Qty</th>
+                        <th>Unit</th>
+                        <th>Purchase Price</th>
+                        <th>Sale Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unit }}</td>
+                        <td>₹{{ "%.2f"|format(item.purchase_price) }}</td>
+                        <td>₹{{ "%.2f"|format(item.sale_price) }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_item', id=item.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form method="post" action="{{ url_for('delete_item', id=item.id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center">No items found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

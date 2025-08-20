@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Add New Customer</h2>
+    <hr>
+    
+    <form method="POST" action="{{ url_for('add_customer') }}" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="name"><strong>Customer Name*:</strong></label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mobile"><strong>Mobile Number:</strong></label>
+                    <input type="text" class="form-control" id="mobile" name="mobile">
+                </div>
+                
+                <div class="form-group">
+                    <label for="address"><strong>Address*:</strong></label>
+                    <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="aadhar"><strong>Aadhar Number</strong></label>
+                    <input type="text" class="form-control" id="aadhar" name="aadhar">
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label><strong>Customer Photo:</strong></label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="photo" name="photo">
+                        <label class="custom-file-label" for="photo">Choose file</label>
+                    </div>
+                    <small class="form-text text-muted">Max size 2MB (JPEG/PNG)</small>
+                </div>
+                
+                <div class="mt-4">
+                    <img id="photo-preview" src="{{ url_for('static', filename='images/default-user.png') }}" 
+                         class="img-thumbnail" style="max-height: 200px; display: block;">
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Save Customer</button>
+            <a href="{{ url_for('customers') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Preview photo before upload
+document.getElementById('photo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('photo-preview').src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        document.querySelector('.custom-file-label').textContent = file.name;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Suppliers{% endblock %}
+{% block header %}Suppliers Management{% endblock %}
+
+{% block header_buttons %}
+<a href="{{ url_for('add_supplier') }}" class="btn btn-primary">
+    <i class="bi bi-plus-circle"></i> New Supplier
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <form method="get" class="mb-4">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search suppliers..." name="search" value="{{ search_term }}">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                {% if search_term %}
+                <a href="{{ url_for('suppliers') }}" class="btn btn-outline-danger">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>GSTIN</th>
+                        <th>Balance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                    <tr class="text-center">
+                        <td>{{ supplier.id }}</td>
+                        <td>
+                            <a href="{{ url_for('view_supplier', id=supplier.id) }}" class="text-decoration-none">
+                                {{ supplier.name }}
+                            </a>
+                        </td>
+                        <td>{{ supplier.mobile or '-' }}</td>
+                        <td>{{ supplier.gstin or '-' }}</td>
+                        <td>
+                            <span class="badge {% if supplier.balance > 0 %}bg-danger{% elif supplier.balance < 0 %}bg-success{% else %}bg-secondary{% endif %}">
+                                ₹{{ "%.2f"|format(supplier.balance) }}
+                            </span>
+                        </td>
+                        <td>
+                            <!-- View Button -->
+                            <a href="{{ url_for('view_supplier', id=supplier.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <!-- Edit Button -->
+                            <a href="{{ url_for('edit_supplier', id=supplier.id) }}" class="btn btn-sm btn-outline-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <!-- Delete Button -->
+                            <form method="POST" action="{{ url_for('delete_supplier', id=supplier.id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this supplier?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">No suppliers found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

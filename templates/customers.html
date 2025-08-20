@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Customers</h2>
+        <a href="{{ url_for('add_customer') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> New Customer
+        </a>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('customers') }}" class="form-inline">
+                <div class="input-group w-100">
+                    <input type="text" name="search" class="form-control" placeholder="Search customers..." 
+                           value="{{ search_term }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                        {% if search_term %}
+                        <a href="{{ url_for('customers') }}" class="btn btn-outline-secondary">
+                            Clear
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Mobile</th>
+                            <th>Address</th>
+                            <th>Balance</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr class="text-center">
+                            <td>{{ customer.id }}</td>
+                            <td class="text-center">
+                                <a href="{{ url_for('view_customer', id=customer.id) }}" class="text-decoration-none">
+                                    {{ customer.name }}
+                                </a>
+                            </td>
+                            <td>{{ customer.mobile or '-' }}</td>
+                            <td>{{ customer.address|truncate(30) if customer.address else '-' }}</td>
+                            <td>
+                                {% if customer.total_due > 0 %}
+                                    <span class="badge bg-danger">Due ₹{{ "%.2f"|format(customer.total_due) }}</span>
+                                {% elif customer.total_due < 0 %}
+                                    <span class="badge bg-success">Advance ₹{{ "%.2f"|format(-customer.total_due) }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No Balance</span>
+                                {% endif %}
+                            </td>
+                                <td>
+				    <!-- View Button -->
+				    <a href="{{ url_for('view_customer', id=customer.id) }}" class="btn btn-sm btn-outline-primary">
+				        <i class="bi bi-eye"></i>
+				    </a>
+				    <!-- Edit Button -->
+				    <a href="{{ url_for('edit_customer', id=customer.id) }}" class="btn btn-sm btn-outline-warning">
+				        <i class="bi bi-pencil"></i>
+				    </a>
+				    <!-- Delete Button -->
+				    <form method="POST" action="{{ url_for('delete_customer', id=customer.id) }}" class="d-inline">
+				        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this customer?')">
+				            <i class="bi bi-trash"></i>
+				        </button>
+				    </form>
+				</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">No customers found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-3">
+                <div>
+                    <span class="badge bg-light text-dark">Total: {{ customers|length }} customers</span>
+                </div>
+                <div>
+                    <span class="badge bg-danger">
+                        Total Due: ₹{{ "%.2f"|format(total_due_all) if total_due_all is defined else '0.00' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

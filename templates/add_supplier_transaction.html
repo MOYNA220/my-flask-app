@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Add Transaction for {{ supplier.name }}</h2>
+    <hr>
+    
+    <form method="POST" action="{{ url_for('add_supplier_transaction', supplier_id=supplier.id) }}">
+        <div class="row">
+            <div class="col-md-6">    
+                <div class="mb-3">
+                    <label class="form-label"><strong>Date*</strong></label>
+                    <input type="date" class="form-control" name="transaction_date" 
+                           value="{{ current_date }}" required>
+                </div>
+
+	    <div class="mb-3">
+                    <label class="form-label"><strong>Transaction Type*</strong></label>
+                    <select class="form-select" name="transaction_type" required>
+                        <option value="purchase" style="color: red;">Purchase (Products)</option>
+                        <option value="payment" style="color: green;">Payment (Pay Amount)</option>
+                    </select>
+                </div>
+		<div class="mb-3">
+                    <label class="form-label"><strong>Amount*</strong></label>
+                    <input type="number" step="0.01" class="form-control" name="amount" required>
+                </div>
+              </div>
+		<div class="col-md-6">
+                 <div class="mb-3">
+                    <label class="form-label"><strong>Bill/Reference No</strong><small class="text-muted">(Optional)</small></label>
+                    <input type="text" class="form-control" name="bill_no">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Description</strong></label>
+                    <textarea class="form-control" name="description" rows="3"></textarea>
+                </div>
+           </div>
+   
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Save Transaction</button>
+            <a href="{{ url_for('view_supplier', id=supplier.id) }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
