@@ -8,7 +8,6 @@ chardet==5.2.0
 charset-normalizer==3.4.2
 click==8.2.1
 colorama==0.4.6
-comtypes==1.4.11
 defusedxml==0.7.1
 dill==0.4.0
 Flask==3.1.1
@@ -27,17 +26,11 @@ MarkupSafe==3.0.2
 mccabe==0.7.0
 opencv-contrib-python==4.11.0.86
 packaging==25.0
-pefile==2023.2.7
-pillow==11.3.0
-platformdirs==4.3.7
 pyinstaller==6.13.0
 pyinstaller-hooks-contrib==2025.3
 pylint==3.3.6
-pypiwin32==223
 python-barcode==0.15.1
 pyttsx3==2.98
-pywin32==310
-pywin32-ctypes==0.2.3
 qrcode==8.2
 reportlab==4.4.0
 requests==2.32.4
